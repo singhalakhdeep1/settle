@@ -1,0 +1,26 @@
+{
+    "name": "@payflow/database",
+    "version": "0.1.0",
+    "private": true,
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "scripts": {
+        "db:generate": "prisma generate",
+        "db:migrate": "prisma migrate deploy",
+        "db:migrate:dev": "prisma migrate dev",
+        "db:seed": "ts-node prisma/seed.ts",
+        "db:studio": "prisma studio",
+        "db:reset": "prisma migrate reset --force"
+    },
+    "dependencies": {
+        "@prisma/client": "^6.7.0"
+    },
+    "devDependencies": {
+        "prisma": "^6.7.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3",
+        "@types/node": "^22.15.18",
+        "bcryptjs": "^3.0.2",
+        "@types/bcryptjs": "^2.4.6"
+    }
+}

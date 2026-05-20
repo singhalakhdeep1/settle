@@ -1,0 +1,225 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Plan {
+    STARTER
+    GROWTH
+    ENTERPRISE
+}
+
+enum MemberRole {
+    OWNER
+    ADMIN
+    VIEWER
+}
+
+enum PaymentIntentStatus {
+    REQUIRES_PAYMENT_METHOD
+    REQUIRES_CONFIRMATION
+    REQUIRES_ACTION
+    PROCESSING
+    REQUIRES_CAPTURE
+    SUCCEEDED
+    CANCELLED
+    FAILED
+}
+
+enum DeliveryStatus {
+    PENDING
+    DELIVERED
+    FAILED
+    DEAD_LETTER
+}
+
+// ─── User ─────────────────────────────────────────────────────────────────────
+
+model User {
+    id            String   @id @default(cuid())
+    email         String   @unique
+    passwordHash  String   @map("password_hash")
+    fullName      String   @map("full_name")
+    avatarUrl     String?  @map("avatar_url")
+    emailVerified Boolean  @default(false) @map("email_verified")
+    createdAt     DateTime @default(now()) @map("created_at")
+    updatedAt     DateTime @updatedAt @map("updated_at")
+
+    memberships OrganizationMember[]
+
+    @@map("users")
+}
+
+// ─── Organization ─────────────────────────────────────────────────────────────
+
+model Organization {
+    id        String   @id @default(cuid())
+    name      String
+    slug      String   @unique
+    plan      Plan     @default(STARTER)
+    metadata  Json     @default("{}")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    members          OrganizationMember[]
+    apiKeys          ApiKey[]
+    paymentIntents   PaymentIntent[]
+    webhookEndpoints WebhookEndpoint[]
+    auditLogs        AuditLog[]
+
+    @@map("organizations")
+}
+
+model OrganizationMember {
+    id        String     @id @default(cuid())
+    orgId     String     @map("org_id")
+    userId    String     @map("user_id")
+    role      MemberRole @default(VIEWER)
+    createdAt DateTime   @default(now()) @map("created_at")
+
+    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([orgId, userId])
+    @@map("organization_members")
+}
+
+// ─── API Keys ─────────────────────────────────────────────────────────────────
+// keyHash is SHA-256(plaintext key). keyPrefix is first 8 chars for display.
+// Permissions: ["payments:read", "payments:write", "webhooks:read", "webhooks:write"]
+
+model ApiKey {
+    id          String    @id @default(cuid())
+    orgId       String    @map("org_id")
+    name        String
+    keyHash     String    @unique @map("key_hash")
+    keyPrefix   String    @map("key_prefix")
+    permissions String[]  @default(["payments:read", "payments:write"])
+    rateLimit   Int       @default(1000) @map("rate_limit")
+    lastUsedAt  DateTime? @map("last_used_at")
+    expiresAt   DateTime? @map("expires_at")
+    revokedAt   DateTime? @map("revoked_at")
+    createdAt   DateTime  @default(now()) @map("created_at")
+
+    organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+    @@index([keyHash])
+    @@index([orgId])
+    @@map("api_keys")
+}
+
+// ─── Payment Intents ─────────────────────────────────────────────────────────
+// amountPaise stored as BigInt — NO FLOATS. INR: 100 paise = ₹1.
+// idempotencyKey scoped per org to prevent duplicate charges.
+
+model PaymentIntent {
+    id             String              @id @default(cuid())
+    orgId          String              @map("org_id")
+    idempotencyKey String              @map("idempotency_key")
+    amountPaise    BigInt              @map("amount_paise")
+    currency       String              @default("INR")
+    status         PaymentIntentStatus @default(REQUIRES_PAYMENT_METHOD)
+    description    String?
+    customerId     String?             @map("customer_id")
+    metadata       Json                @default("{}")
+    stripeId       String?             @unique @map("stripe_id")
+    failureReason  String?             @map("failure_reason")
+    capturedAt     DateTime?           @map("captured_at")
+    cancelledAt    DateTime?           @map("cancelled_at")
+    createdAt      DateTime            @default(now()) @map("created_at")
+    updatedAt      DateTime            @updatedAt @map("updated_at")
+
+    organization      Organization      @relation(fields: [orgId], references: [id])
+    webhookDeliveries WebhookDelivery[]
+
+    @@unique([orgId, idempotencyKey])
+    @@index([orgId, status])
+    @@index([orgId, createdAt(sort: Desc)])
+    @@map("payment_intents")
+}
+
+// ─── Webhook Endpoints ────────────────────────────────────────────────────────
+// secret is AES-256 encrypted (not plaintext, not hashed — must be decryptable for HMAC signing)
+// events: ["payment.succeeded", "payment.failed", "payment.created", "*"]
+
+model WebhookEndpoint {
+    id          String   @id @default(cuid())
+    orgId       String   @map("org_id")
+    url         String
+    secretEnc   String   @map("secret_enc") // AES-256 encrypted
+    events      String[]
+    enabled     Boolean  @default(true)
+    description String?
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+
+    organization Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+    deliveries   WebhookDelivery[]
+
+    @@index([orgId])
+    @@map("webhook_endpoints")
+}
+
+// ─── Webhook Deliveries ───────────────────────────────────────────────────────
+// Dead-letter queue: after maxAttempts fails → status = DEAD_LETTER
+// BullMQ job IDs stored to allow re-enqueueing
+
+model WebhookDelivery {
+    id               String         @id @default(cuid())
+    endpointId       String         @map("endpoint_id")
+    paymentIntentId  String?        @map("payment_intent_id")
+    eventType        String         @map("event_type")
+    payload          Json
+    status           DeliveryStatus @default(PENDING)
+    attempts         Int            @default(0)
+    maxAttempts      Int            @default(5) @map("max_attempts")
+    nextRetryAt      DateTime?      @map("next_retry_at")
+    lastResponseCode Int?           @map("last_response_code")
+    lastResponseBody String?        @map("last_response_body")
+    deliveredAt      DateTime?      @map("delivered_at")
+    bullJobId        String?        @map("bull_job_id")
+    createdAt        DateTime       @default(now()) @map("created_at")
+    updatedAt        DateTime       @updatedAt @map("updated_at")
+
+    endpoint      WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+    paymentIntent PaymentIntent?  @relation(fields: [paymentIntentId], references: [id])
+
+    @@index([endpointId, status])
+    @@index([paymentIntentId])
+    @@map("webhook_deliveries")
+}
+
+// ─── Audit Log ────────────────────────────────────────────────────────────────
+// IMMUTABLE — no updates, no deletes. Every state change recorded.
+// actorId null for system-initiated actions (webhook delivery, cron jobs).
+
+model AuditLog {
+    id           String   @id @default(cuid())
+    orgId        String   @map("org_id")
+    actorId      String?  @map("actor_id")
+    actorEmail   String?  @map("actor_email")
+    action       String   // e.g. "payment.created", "api_key.revoked"
+    resourceType String   @map("resource_type")
+    resourceId   String   @map("resource_id")
+    before       Json?
+    after        Json?
+    ipAddress    String?  @map("ip_address")
+    userAgent    String?  @map("user_agent")
+    metadata     Json     @default("{}")
+    createdAt    DateTime @default(now()) @map("created_at")
+
+    organization Organization @relation(fields: [orgId], references: [id])
+
+    @@index([orgId, createdAt(sort: Desc)])
+    @@index([orgId, resourceType, resourceId])
+    @@map("audit_logs")
+}
