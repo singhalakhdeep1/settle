@@ -4,6 +4,16 @@ export * from "@prisma/client";
 
 import { PrismaClient } from "@prisma/client";
 
+// Set default DATABASE_URL if not provided
+if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = "postgresql://payflow:payflow_dev@localhost:5432/payflow_dev";
+}
+
+// Set default REDIS_URL if not provided
+if (!process.env.REDIS_URL) {
+    process.env.REDIS_URL = "redis://localhost:6379";
+}
+
 declare global {
     // eslint-disable-next-line no-var
     var __prisma: PrismaClient | undefined;
