@@ -1,30 +1,8 @@
 # PayFlow — Payment Processing Platform
 
-> A production-grade **Stripe-style payment processing API** and dashboard.
-> Dual JWT + API Key authentication, idempotent payment intents, HMAC-signed outbound webhooks with BullMQ-powered retry queues, per-org RBAC, AES-256 encrypted API key secrets, and a full-featured Next.js operator dashboard.
+A Stripe-style payment processing API and dashboard with JWT + API key authentication, idempotent payment intents, HMAC-signed webhooks, BullMQ retry queues, per-org RBAC, and AES-256 encrypted API key secrets.
 
----
-
-## Table of Contents
-
-1. [Project Overview](#1-project-overview)
-2. [Architecture](#2-architecture)
-3. [Tech Stack](#3-tech-stack)
-4. [Database Schema](#4-database-schema)
-5. [Authentication & Authorization](#5-authentication--authorization)
-6. [Idempotency](#6-idempotency)
-7. [Webhook System](#7-webhook-system)
-8. [API Reference](#8-api-reference)
-9. [Dashboard (Frontend)](#9-dashboard-frontend)
-10. [Environment Variables](#10-environment-variables)
-11. [Quick Start](#11-quick-start)
-12. [Full Docker Deployment](#12-full-docker-deployment)
-13. [Key Design Decisions](#13-key-design-decisions)
-14. [Project Structure](#14-project-structure)
-
----
-
-## 1. Project Overview
+## Project Overview
 
 PayFlow is a Stripe-inspired payment processing platform that lets organizations:
 
@@ -38,7 +16,7 @@ The platform is multi-tenant: each organization has its own isolated API keys, p
 
 ---
 
-## 2. Architecture
+## Architecture
 
 ```
 payflow/
@@ -64,7 +42,7 @@ payflow/
 
 ---
 
-## 3. Tech Stack
+## Tech Stack
 
 | Layer            | Technology                                                        |
 | ---------------- | ----------------------------------------------------------------- |
@@ -81,7 +59,7 @@ payflow/
 
 ---
 
-## 4. Database Schema
+## Database Schema
 
 8 Prisma models:
 
@@ -109,7 +87,7 @@ payflow/
 
 ---
 
-## 5. Authentication & Authorization
+## Authentication & Authorization
 
 PayFlow supports two authentication methods on every protected route:
 
@@ -146,7 +124,7 @@ RolesGuard         →  enforces minimum role requirement from @Roles() decorato
 
 ---
 
-## 6. Idempotency
+## Idempotency
 
 Creating a payment intent requires an `Idempotency-Key` header (UUID format).
 
@@ -170,7 +148,7 @@ Content-Type: application/json
 
 ---
 
-## 7. Webhook System
+## Webhook System
 
 When a payment changes status, PayFlow delivers a signed HTTP POST to all active endpoints registered for that event type.
 
@@ -236,7 +214,7 @@ function verifySignature(
 
 ---
 
-## 8. API Reference
+## API Reference
 
 Base URL: `http://localhost:4000/api`
 Swagger UI: `http://localhost:4000/api/docs`
@@ -308,7 +286,7 @@ Swagger UI: `http://localhost:4000/api/docs`
 
 ---
 
-## 9. Dashboard (Frontend)
+## Dashboard (Frontend)
 
 Built with **Next.js 15 App Router**, TailwindCSS, TanStack Query v5, Zustand.
 
@@ -338,7 +316,7 @@ Built with **Next.js 15 App Router**, TailwindCSS, TanStack Query v5, Zustand.
 
 ---
 
-## 10. Environment Variables
+## Environment Variables
 
 Copy `.env.example` to `.env`:
 
@@ -384,7 +362,7 @@ NEXTAUTH_URL=http://localhost:3000
 
 ---
 
-## 11. Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -433,7 +411,7 @@ pnpm dev
 
 ---
 
-## 12. Full Docker Deployment
+## Full Docker Deployment
 
 ```bash
 # 1. Configure environment
@@ -450,7 +428,7 @@ docker compose exec api npx prisma db seed
 
 ---
 
-## 13. Key Design Decisions
+## Key Design Decisions
 
 ### Money as BigInt paise
 
@@ -498,7 +476,7 @@ Rather than NestJS's built-in `class-validator` ValidationPipe, PayFlow uses a c
 
 ---
 
-## 14. Project Structure
+## Project Structure
 
 ```
 payflow/
@@ -542,3 +520,9 @@ payflow/
 ├── pnpm-workspace.yaml
 └── .env.example
 ```
+
+---
+
+## 📝 License
+
+Proprietary - All rights reserved.
