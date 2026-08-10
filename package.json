@@ -1,34 +1,34 @@
 {
-    "name": "payflow",
-    "version": "0.1.0",
-    "private": true,
-    "description": "Stripe-style payments API — idempotency, HMAC webhooks, RBAC, audit logs",
-    "packageManager": "pnpm@9.15.0",
-    "engines": {
-        "node": ">=20.0.0",
-        "pnpm": ">=9.0.0"
-    },
-    "scripts": {
-        "dev": "turbo dev",
-        "build": "turbo build",
-        "lint": "turbo lint",
-        "type-check": "turbo type-check",
-        "test": "turbo test",
-        "test:e2e": "turbo test:e2e",
-        "db:generate": "turbo db:generate",
-        "db:migrate": "turbo db:migrate",
-        "db:seed": "turbo db:seed",
-        "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
-    },
-    "devDependencies": {
-        "turbo": "^2.3.3",
-        "typescript": "^5.8.3",
-        "@types/node": "^22.15.18",
-        "prettier": "^3.5.3",
-        "eslint": "^9.26.0"
-    },
-    "workspaces": [
-        "apps/*",
-        "packages/*"
-    ]
+  "name": "payflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Stripe-style payments API \u2014 idempotency, HMAC webhooks, RBAC, audit logs",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e",
+    "db:generate": "turbo db:generate",
+    "db:migrate": "turbo db:migrate",
+    "db:seed": "turbo db:seed",
+    "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.8.3",
+    "@types/node": "^22.15.18",
+    "prettier": "^3.5.3",
+    "eslint": "^9.26.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }
