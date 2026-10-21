@@ -1,6 +1,6 @@
 import { Controller, Get, Query, UseGuards, Req, ParseIntPipe, DefaultValuePipe } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
-import { JwtAuthGuard } from "../auth/guards/jwt.guard";
+import { JwtOrApiKeyGuard as JwtAuthGuard } from "../auth/guards/jwt-or-api-key.guard";
 import { AuditService } from "./audit.service";
 
 @ApiTags("audit")
