@@ -33,7 +33,7 @@ export class PaymentsService {
         private readonly webhookDispatch: WebhookDispatchService,
     ) {
         this.stripe = new Stripe(this.config.get<string>("app.stripe.secretKey")!, {
-            apiVersion: "2025-04-30.basil",
+            apiVersion: "2025-04-30.basil" as Stripe.LatestApiVersion,
         });
     }
 

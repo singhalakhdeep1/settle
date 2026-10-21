@@ -12,7 +12,7 @@ export class AuthController {
     @Post("register")
     @Version("1")
     @ApiOperation({ summary: "Register a new user and organization" })
-    async register(@Body(new ZodValidationPipe(RegisterSchema)) dto: RegisterDto) {
+    async register(@Body(new ZodValidationPipe(RegisterSchema)) dto: RegisterDto): Promise<any> {
         return this.authService.register(dto);
     }
 
@@ -20,7 +20,7 @@ export class AuthController {
     @Version("1")
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: "Login with email and password" })
-    async login(@Body(new ZodValidationPipe(LoginSchema)) dto: LoginDto) {
+    async login(@Body(new ZodValidationPipe(LoginSchema)) dto: LoginDto): Promise<any> {
         return this.authService.login(dto);
     }
 }

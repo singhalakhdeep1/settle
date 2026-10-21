@@ -25,7 +25,7 @@ export class OrganizationsController {
     @Get("me")
     @Version("1")
     @ApiOperation({ summary: "Get current organization" })
-    getOrg(@CurrentUser() user: AuthenticatedUser) {
+    getOrg(@CurrentUser() user: AuthenticatedUser): Promise<any> {
         return this.orgsService.getOrg(user.orgId);
     }
 

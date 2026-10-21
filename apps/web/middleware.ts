@@ -2,8 +2,8 @@ import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export default auth((req: NextRequest & { auth?: unknown }) => {
-    const isAuthenticated = !!(req as NextRequest & { auth?: { user?: unknown } }).auth?.user;
+export default (auth as any)((req: NextRequest & { auth?: { user?: unknown } }) => {
+    const isAuthenticated = !!req.auth?.user;
     const isAuthPage = req.nextUrl.pathname.startsWith("/login") || req.nextUrl.pathname.startsWith("/register");
 
     if (!isAuthenticated && !isAuthPage) {

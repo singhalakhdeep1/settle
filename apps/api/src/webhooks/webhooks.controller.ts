@@ -91,7 +91,7 @@ export class WebhooksController {
     findDeliveries(
         @Query(new ZodValidationPipe(ListWebhookDeliveriesSchema)) query: ListWebhookDeliveriesDto,
         @CurrentUser() user: AuthenticatedUser,
-    ) {
+    ): Promise<any> {
         return this.webhooksService.findDeliveries(user.orgId, query);
     }
 }

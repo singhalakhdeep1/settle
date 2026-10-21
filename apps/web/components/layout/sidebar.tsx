@@ -10,7 +10,7 @@ import {
     Settings,
     Building2,
 } from "lucide-react";
-import { cn } from "@payflow/shared";
+import { cn } from "@payflow/ui";
 
 const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -34,7 +34,7 @@ export default function Sidebar() {
                 {navItems.map(({ href, label, icon: Icon }) => (
                     <Link
                         key={href}
-                        href={href}
+                        href={href as any}
                         className={cn(
                             "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                             pathname === href || pathname.startsWith(href + "/")

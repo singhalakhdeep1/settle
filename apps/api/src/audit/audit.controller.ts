@@ -19,7 +19,7 @@ export class AuditController {
         @Query("action") action?: string,
         @Query("page", new DefaultValuePipe(1), ParseIntPipe) page?: number,
         @Query("pageSize", new DefaultValuePipe(50), ParseIntPipe) pageSize?: number,
-    ) {
+    ): Promise<any> {
         const orgId: string = req.user?.orgId;
         return this.auditService.findMany(orgId, {
             resourceType,

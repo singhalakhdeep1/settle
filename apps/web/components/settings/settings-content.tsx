@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@payflow/ui";
 import { Button } from "@payflow/ui";
 import { Badge } from "@payflow/ui";
 import { Input } from "@payflow/ui";
-import { useToast } from "@payflow/ui";
 import { UserPlus, Trash2, Building2, CreditCard } from "lucide-react";
 
 const ROLE_OPTIONS = ["VIEWER", "ADMIN", "OWNER"] as const;
@@ -16,45 +15,43 @@ const ROLE_OPTIONS = ["VIEWER", "ADMIN", "OWNER"] as const;
 export default function SettingsContent() {
     const { data: session } = useSession();
     const qc = useQueryClient();
-    const { toast } = useToast();
-
     const [inviteEmail, setInviteEmail] = useState("");
     const [inviteRole, setInviteRole] = useState<string>("VIEWER");
 
-    const { data: org, isLoading } = useQuery({
+    const { data: orgRaw, isLoading } = useQuery({
         queryKey: ["org"],
         queryFn: getOrg,
     });
+    const org = orgRaw as any;
 
     const inviteMut = useMutation({
         mutationFn: () => inviteMember({ email: inviteEmail.trim(), role: inviteRole }),
         onSuccess: () => {
-            toast({ title: "Invitation sent", description: `${inviteEmail} has been invited as ${inviteRole}.` });
             setInviteEmail("");
             qc.invalidateQueries({ queryKey: ["org"] });
         },
         onError: () => {
-            toast({ title: "Failed to invite member", variant: "destructive" });
+
         },
     });
 
     const removeMut = useMutation({
         mutationFn: (memberId: string) => removeMember(memberId),
         onSuccess: () => {
-            toast({ title: "Member removed" });
+
             qc.invalidateQueries({ queryKey: ["org"] });
         },
         onError: () => {
-            toast({ title: "Failed to remove member", variant: "destructive" });
+
         },
     });
 
     const currentUserId = (session?.user as { id?: string } | undefined)?.id;
-    const currentMember = org?.members?.find((m) => m.user.id === currentUserId);
+    const currentMember = org?.members?.find((m: any) => m.user.id === currentUserId);
     const isOwner = currentMember?.role === "OWNER";
 
     if (isLoading) {
-        return <div className="p-8 text-sm text-gray-500">Loading settings…</div>;
+        return <div className="p-8 text-sm text-gray-500">Loading settingsâ€¦</div>;
     }
 
     return (
@@ -75,11 +72,11 @@ export default function SettingsContent() {
                 <CardContent className="space-y-3">
                     <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Name</span>
-                        <span className="font-medium">{org?.name ?? "—"}</span>
+                        <span className="font-medium">{org?.name ?? "â€”"}</span>
                     </div>
                     <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Slug</span>
-                        <span className="font-mono text-sm text-gray-700">{org?.slug ?? "—"}</span>
+                        <span className="font-mono text-sm text-gray-700">{org?.slug ?? "â€”"}</span>
                     </div>
                     <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 flex items-center gap-1">
@@ -100,7 +97,7 @@ export default function SettingsContent() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="divide-y divide-gray-100">
-                        {org?.members?.map((member) => (
+                        {org?.members?.map((member: any) => (
                             <div key={member.id} className="flex items-center justify-between py-3">
                                 <div>
                                     <p className="text-sm font-medium text-gray-900">{member.user.fullName}</p>
@@ -152,7 +149,7 @@ export default function SettingsContent() {
                                 <Button
                                     onClick={() => inviteMut.mutate()}
                                     disabled={!inviteEmail.trim() || inviteMut.isPending}
-                                    isLoading={inviteMut.isPending}
+                                    loading={inviteMut.isPending}
                                 >
                                     Invite
                                 </Button>

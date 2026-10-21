@@ -26,7 +26,7 @@ export class AuditService {
      */
     async log(entry: AuditLogEntry): Promise<void> {
         try {
-            await this.prisma.auditLog.create({ data: entry });
+            await this.prisma.auditLog.create({ data: entry as any });
         } catch (err) {
             // Log error but do not propagate — audit failures are non-fatal
             console.error("[AuditService] Failed to write audit log:", err);
@@ -39,7 +39,7 @@ export class AuditService {
         action?: string;
         page?: number;
         pageSize?: number;
-    }) {
+    }): Promise<any> {
         const page = opts?.page ?? 1;
         const pageSize = opts?.pageSize ?? 50;
         const skip = (page - 1) * pageSize;

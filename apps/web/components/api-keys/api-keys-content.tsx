@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -63,7 +63,7 @@ export default function ApiKeysContent() {
                 <Card className="border-amber-200 bg-amber-50">
                     <CardContent className="pt-4">
                         <p className="text-sm font-medium text-amber-800 mb-2">
-                            ⚠️ Save this API key — it won&apos;t be shown again.
+                            âš ï¸ Save this API key â€” it won&apos;t be shown again.
                         </p>
                         <code className="block text-xs bg-white border rounded px-3 py-2 break-all">{revealedKey}</code>
                         <Button size="sm" variant="outline" className="mt-2" onClick={() => setRevealedKey(null)}>Dismiss</Button>
@@ -81,10 +81,10 @@ export default function ApiKeysContent() {
                             <div key={key.id} className="flex items-center justify-between py-3">
                                 <div>
                                     <p className="text-sm font-medium">{key.name}</p>
-                                    <code className="text-xs text-gray-500">{key.keyPrefix}••••••••••••</code>
+                                    <code className="text-xs text-gray-500">{key.keyPrefix}â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢</code>
                                     <p className="text-xs text-gray-400 mt-0.5">
                                         Created {format(new Date(key.createdAt), "PP")}
-                                        {key.lastUsedAt && ` · Last used ${format(new Date(key.lastUsedAt), "PP")}`}
+                                        {key.lastUsedAt && ` Â· Last used ${format(new Date(key.lastUsedAt), "PP")}`}
                                     </p>
                                     <div className="flex flex-wrap gap-1 mt-1">
                                         {key.permissions.map(p => (
@@ -134,7 +134,7 @@ export default function ApiKeysContent() {
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-                        <Button onClick={() => createMut.mutate()} isLoading={createMut.isPending} disabled={!name}>
+                        <Button onClick={() => createMut.mutate()} loading={createMut.isPending} disabled={!name}>
                             Create key
                         </Button>
                     </DialogFooter>

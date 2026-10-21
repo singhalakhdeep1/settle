@@ -10,7 +10,7 @@ export class OrganizationsService {
         private readonly audit: AuditService,
     ) {}
 
-    async getOrg(orgId: string) {
+    async getOrg(orgId: string): Promise<any> {
         const org = await this.prisma.organization.findUnique({
             where: { id: orgId },
             include: {

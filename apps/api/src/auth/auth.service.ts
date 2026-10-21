@@ -21,7 +21,7 @@ export class AuthService {
         private readonly config: ConfigService,
     ) {}
 
-    async register(dto: RegisterDto) {
+    async register(dto: RegisterDto): Promise<any> {
         const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
         if (existing) {
             throw new ConflictException("An account with this email already exists");
@@ -53,11 +53,11 @@ export class AuthService {
             return { user, org };
         });
 
-        const token = this.signToken(result.user.id, result.user.email, result.org.id, MemberRole.OWNER);
+        const token = this.signToken(result.user.id, result.user.email, result.org.id, MemberRole.OWNER as any);
         return { user: this.sanitizeUser(result.user), org: result.org, token };
     }
 
-    async login(dto: LoginDto) {
+    async login(dto: LoginDto): Promise<any> {
         const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
         if (!user) throw new UnauthorizedException("Invalid credentials");
 
@@ -73,7 +73,7 @@ export class AuthService {
 
         if (!membership) throw new UnauthorizedException("No active organization found");
 
-        const token = this.signToken(user.id, user.email, membership.orgId, membership.role);
+        const token = this.signToken(user.id, user.email, membership.orgId, membership.role as any);
         return {
             user: this.sanitizeUser(user),
             org: membership.organization,
@@ -82,7 +82,7 @@ export class AuthService {
         };
     }
 
-    async validateApiKey(rawKey: string) {
+    async validateApiKey(rawKey: string): Promise<any> {
         const { hashApiKey } = await import("@payflow/shared");
         const keyHash = hashApiKey(rawKey);
         const apiKey = await this.prisma.apiKey.findUnique({
@@ -103,7 +103,7 @@ export class AuthService {
         return apiKey;
     }
 
-    private signToken(userId: string, email: string, orgId: string, role: MemberRole): string {
+    private signToken(userId: string, email: string, orgId: string, role: any): string {
         const payload: Omit<JwtPayload, "iat" | "exp"> = { sub: userId, email, orgId, role };
         return this.jwtService.sign(payload);
     }

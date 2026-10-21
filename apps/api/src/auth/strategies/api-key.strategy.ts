@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy } from "passport";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { Strategy } = require("passport") as { Strategy: any };
 import { AuthService } from "../auth.service";
 import type { Request } from "express";
 
@@ -13,24 +14,27 @@ class ApiKeyPassportStrategy extends Strategy {
     }
 
     authenticate(req: Request) {
+        const self = this as any;
         const key = req.headers["x-api-key"] as string | undefined;
         if (!key) {
-            return this.fail({ message: "X-API-Key header is required" }, 401);
+            return self.fail({ message: "X-API-Key header is required" }, 401);
         }
 
         this.verify(key)
             .then((result) => {
                 if (!result) {
-                    return this.fail({ message: "Invalid or revoked API key" }, 401);
+                    return self.fail({ message: "Invalid or revoked API key" }, 401);
                 }
-                this.success(result);
+                self.success(result);
             })
-            .catch((err: Error) => this.error(err));
+            .catch((err: Error) => self.error(err));
     }
+
+    validate() { return true; }
 }
 
 @Injectable()
-export class ApiKeyStrategy extends PassportStrategy(ApiKeyPassportStrategy, "api-key") {
+export class ApiKeyStrategy extends (PassportStrategy(ApiKeyPassportStrategy, "api-key") as any) {
     constructor(private readonly authService: AuthService) {
         super(async (key: string) => {
             const apiKey = await authService.validateApiKey(key);

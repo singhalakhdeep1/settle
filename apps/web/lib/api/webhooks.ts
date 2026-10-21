@@ -21,17 +21,17 @@ export interface WebhookDelivery {
 }
 
 export async function listWebhookEndpoints() {
-    const res = await apiClient.get<WebhookEndpoint[]>("/v1/webhooks/endpoints");
+    const res = await apiClient.get<{ data: WebhookEndpoint[] }>("/v1/webhooks/endpoints");
     return res.data;
 }
 
 export async function createWebhookEndpoint(data: { url: string; description?: string; events: string[] }) {
-    const res = await apiClient.post<WebhookEndpoint & { secret: string }>("/v1/webhooks/endpoints", data);
+    const res = await apiClient.post<{ data: WebhookEndpoint & { secret: string } }>("/v1/webhooks/endpoints", data);
     return res.data;
 }
 
 export async function rotateWebhookSecret(id: string) {
-    const res = await apiClient.post<{ secret: string }>(`/v1/webhooks/endpoints/${id}/rotate-secret`);
+    const res = await apiClient.post<{ data: { secret: string } }>(`/v1/webhooks/endpoints/${id}/rotate-secret`);
     return res.data;
 }
 

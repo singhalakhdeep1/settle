@@ -12,7 +12,7 @@ import { ApiKeyStrategy } from "./strategies/api-key.strategy";
         PassportModule.register({ defaultStrategy: "jwt" }),
         JwtModule.registerAsync({
             inject: [ConfigService],
-            useFactory: (config: ConfigService) => ({
+            useFactory: (config: ConfigService): any => ({
                 secret: config.get<string>("app.jwt.secret"),
                 signOptions: { expiresIn: config.get<string>("app.jwt.expiresIn") },
             }),

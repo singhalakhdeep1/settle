@@ -16,17 +16,17 @@ export interface OrgMember {
 }
 
 export async function getOrg() {
-    const res = await apiClient.get<{ id: string; name: string; slug: string; plan: string; members: OrgMember[] }>("/v1/organizations/me");
+    const res = await apiClient.get<{ data: { id: string; name: string; slug: string; plan: string; members: OrgMember[] } }>("/v1/organizations/me");
     return res.data;
 }
 
 export async function getOrgMetrics() {
-    const res = await apiClient.get<OrgMetrics>("/v1/organizations/me/metrics");
+    const res = await apiClient.get<{ data: OrgMetrics }>("/v1/organizations/me/metrics");
     return res.data;
 }
 
 export async function inviteMember(data: { email: string; role: string }) {
-    const res = await apiClient.post<OrgMember>("/v1/organizations/me/members", data);
+    const res = await apiClient.post<{ data: OrgMember }>("/v1/organizations/me/members", data);
     return res.data;
 }
 

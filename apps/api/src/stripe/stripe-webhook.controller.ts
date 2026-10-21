@@ -81,7 +81,7 @@ export class StripeWebhookController {
 
     private async handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
         const payment = await this.prisma.paymentIntent.findFirst({
-            where: { stripePaymentIntentId: pi.id },
+            where: { stripeId: pi.id },
         });
         if (!payment) {
             this.logger.warn(`PaymentIntent not found for Stripe id: ${pi.id}`);
@@ -98,11 +98,11 @@ export class StripeWebhookController {
 
         await this.webhookDispatch.dispatch(payment.orgId, "payment.succeeded", {
             id: payment.id,
-            amount: payment.amount.toString(),
-            amountFormatted: formatMoney(payment.amount, payment.currency),
+            amount: payment.amountPaise.toString(),
+            amountFormatted: formatMoney(payment.amountPaise, payment.currency),
             currency: payment.currency,
             status: PaymentIntentStatus.SUCCEEDED,
-            stripePaymentIntentId: pi.id,
+            stripeId: pi.id,
         });
 
         this.logger.log(`PaymentIntent ${payment.id} marked SUCCEEDED`);
@@ -110,7 +110,7 @@ export class StripeWebhookController {
 
     private async handlePaymentFailed(pi: Stripe.PaymentIntent) {
         const payment = await this.prisma.paymentIntent.findFirst({
-            where: { stripePaymentIntentId: pi.id },
+            where: { stripeId: pi.id },
         });
         if (!payment) return;
 
@@ -126,11 +126,11 @@ export class StripeWebhookController {
 
         await this.webhookDispatch.dispatch(payment.orgId, "payment.failed", {
             id: payment.id,
-            amount: payment.amount.toString(),
+            amount: payment.amountPaise.toString(),
             currency: payment.currency,
             status: PaymentIntentStatus.FAILED,
             failureReason,
-            stripePaymentIntentId: pi.id,
+            stripeId: pi.id,
         });
 
         this.logger.log(`PaymentIntent ${payment.id} marked FAILED`);
@@ -138,7 +138,7 @@ export class StripeWebhookController {
 
     private async handlePaymentCanceled(pi: Stripe.PaymentIntent) {
         const payment = await this.prisma.paymentIntent.findFirst({
-            where: { stripePaymentIntentId: pi.id },
+            where: { stripeId: pi.id },
         });
         if (!payment) return;
 

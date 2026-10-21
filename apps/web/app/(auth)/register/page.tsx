@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -27,7 +27,7 @@ export default function RegisterPage() {
             await apiClient.post("/v1/auth/register", data);
             router.push("/login?registered=1");
         } catch (err: unknown) {
-            const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+            const msg = (err instanceof Error) ? err.message : undefined;
             setError(msg ?? "Registration failed. Please try again.");
         }
     };
@@ -56,8 +56,8 @@ export default function RegisterPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Organization name</label>
-                            <Input placeholder="Acme Inc." {...register("organizationName")} />
-                            {errors.organizationName && <p className="mt-1 text-xs text-red-600">{errors.organizationName.message}</p>}
+                            <Input placeholder="Acme Inc." {...register("orgName")} />
+                            {errors.orgName && <p className="mt-1 text-xs text-red-600">{errors.orgName.message}</p>}
                         </div>
 
                         <div>
@@ -72,7 +72,7 @@ export default function RegisterPage() {
                             {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>}
                         </div>
 
-                        <Button type="submit" className="w-full" isLoading={isSubmitting}>
+                        <Button type="submit" className="w-full" loading={isSubmitting}>
                             Create account
                         </Button>
                     </form>

@@ -36,7 +36,7 @@ declare module "next-auth/jwt" {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, signIn, signOut, auth } = (NextAuth as any)({
     providers: [
         Credentials({
             credentials: {
@@ -71,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
-        jwt({ token, user }) {
+        jwt({ token, user }: any) {
             if (user) {
                 token.orgId = (user as User).orgId;
                 token.role = (user as User).role;
@@ -79,7 +79,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
             return token;
         },
-        session({ session, token }) {
+        session({ session, token }: any) {
             session.user.id = token.sub!;
             session.user.orgId = token.orgId;
             session.user.role = token.role;

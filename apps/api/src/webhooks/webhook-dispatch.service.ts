@@ -1,7 +1,7 @@
 import { Injectable, Inject, Logger } from "@nestjs/common";
 import { InjectQueue } from "@nestjs/bullmq";
 import { Queue } from "bullmq";
-import { PrismaClient, DeliveryStatus, WebhookEventType } from "@payflow/database";
+import { PrismaClient, DeliveryStatus } from "@payflow/database";
 import { PRISMA_TOKEN } from "../database/database.module";
 import { WEBHOOK_QUEUE } from "./webhooks.module";
 import { v4 as uuidv4 } from "uuid";
@@ -56,7 +56,7 @@ export class WebhookDispatchService {
                 data: {
                     endpointId: endpoint.id,
                     eventType,
-                    payload: event,
+                    payload: event as any,
                     status: DeliveryStatus.PENDING,
                     maxAttempts: this.MAX_ATTEMPTS,
                     nextRetryAt: new Date(),

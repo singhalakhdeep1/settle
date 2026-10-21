@@ -38,12 +38,12 @@ export class StructuredLoggingService {
   }
 
   logInformation(message: string, additionalContext?: Record<string, any>): void {
-    const logEntry = this.createLogEntry('Information', message, additionalContext, null);
+    const logEntry = this.createLogEntry('Information', message, additionalContext, undefined);
     console.log(JSON.stringify(logEntry));
   }
 
   logWarning(message: string, additionalContext?: Record<string, any>): void {
-    const logEntry = this.createLogEntry('Warning', message, additionalContext, null);
+    const logEntry = this.createLogEntry('Warning', message, additionalContext, undefined);
     console.warn(JSON.stringify(logEntry));
   }
 
@@ -57,7 +57,7 @@ export class StructuredLoggingService {
     context['auditEventType'] = eventType;
     context['auditDescription'] = description;
 
-    const logEntry = this.createLogEntry('Audit', `AUDIT: ${description}`, context, null);
+    const logEntry = this.createLogEntry('Audit', `AUDIT: ${description}`, context, undefined);
     console.log(JSON.stringify(logEntry));
   }
 

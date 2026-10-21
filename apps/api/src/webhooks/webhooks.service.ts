@@ -132,7 +132,7 @@ export class WebhooksService {
         status?: string;
         page?: number;
         pageSize?: number;
-    }) {
+    }): Promise<any> {
         const page = opts.page ?? 1;
         const pageSize = opts.pageSize ?? 20;
         const skip = (page - 1) * pageSize;

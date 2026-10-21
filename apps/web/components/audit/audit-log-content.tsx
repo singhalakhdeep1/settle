@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -38,7 +38,7 @@ export default function AuditLogContent() {
     const { data, isLoading } = useQuery({
         queryKey: ["audit-log", resourceType, page],
         queryFn: async () => {
-            const res = await apiClient.get("/v1/audit", {
+            const res = await apiClient.get<any>("/v1/audit", {
                 params: { resourceType: resourceType || undefined, page, pageSize: 50 },
             });
             return res.data;
@@ -76,7 +76,7 @@ export default function AuditLogContent() {
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
                     <input
                         type="text"
-                        placeholder="Search action, actor, resource…"
+                        placeholder="Search action, actor, resourceâ€¦"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
@@ -103,7 +103,7 @@ export default function AuditLogContent() {
                 </CardHeader>
                 <CardContent className="p-0">
                     {isLoading ? (
-                        <div className="p-6 text-sm text-gray-500">Loading…</div>
+                        <div className="p-6 text-sm text-gray-500">Loadingâ€¦</div>
                     ) : filtered.length === 0 ? (
                         <div className="p-6 text-sm text-gray-500 text-center">No audit events found.</div>
                     ) : (
@@ -125,7 +125,7 @@ export default function AuditLogContent() {
                                             <td className="px-4 py-3 font-mono text-xs text-gray-500 whitespace-nowrap">
                                                 {entry.createdAt
                                                     ? format(new Date(entry.createdAt), "MMM d, yyyy HH:mm:ss")
-                                                    : "—"}
+                                                    : "â€”"}
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="font-medium text-gray-900 truncate max-w-[160px]">
@@ -139,7 +139,7 @@ export default function AuditLogContent() {
                                             <td className="px-4 py-3 font-mono text-xs text-gray-400 truncate max-w-[120px]">
                                                 {entry.resourceId}
                                             </td>
-                                            <td className="px-4 py-3 text-gray-500 text-xs">{entry.ipAddress ?? "—"}</td>
+                                            <td className="px-4 py-3 text-gray-500 text-xs">{entry.ipAddress ?? "â€”"}</td>
                                         </tr>
                                     ))}
                                 </tbody>

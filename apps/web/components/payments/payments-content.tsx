@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useQuery } from "@tanstack/react-query";
 import { listPaymentIntents } from "@/lib/api/payments";
@@ -33,11 +33,11 @@ export default function PaymentsContent() {
                         {data?.data.map((payment) => (
                             <div key={payment.id} className="flex items-center justify-between py-3">
                                 <div>
-                                    <Link href={`/payments/${payment.id}`} className="text-sm font-medium text-blue-600 hover:underline">
+                                    <Link href={`/payments/${payment.id}` as any} className="text-sm font-medium text-blue-600 hover:underline">
                                         {payment.id.slice(0, 16)}...
                                     </Link>
                                     <p className="text-xs text-gray-500 mt-0.5">
-                                        {payment.customerId && `Customer: ${payment.customerId} · `}
+                                        {payment.customerId && `Customer: ${payment.customerId} Â· `}
                                         {format(new Date(payment.createdAt), "PPp")}
                                     </p>
                                 </div>

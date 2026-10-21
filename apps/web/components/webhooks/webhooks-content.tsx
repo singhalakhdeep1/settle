@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -70,7 +70,7 @@ export default function WebhooksContent() {
                 <Card className="border-green-200 bg-green-50">
                     <CardContent className="pt-4">
                         <p className="text-sm font-medium text-green-800 mb-2">
-                            ⚠️ Save this secret now — it won&apos;t be shown again.
+                            âš ï¸ Save this secret now â€” it won&apos;t be shown again.
                         </p>
                         <code className="block text-xs bg-white border rounded px-3 py-2 break-all">{newSecret.secret}</code>
                         <Button size="sm" variant="outline" className="mt-2" onClick={() => setNewSecret(null)}>Dismiss</Button>
@@ -145,7 +145,7 @@ export default function WebhooksContent() {
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-                        <Button onClick={() => createMut.mutate()} isLoading={createMut.isPending} disabled={!url || selectedEvents.length === 0}>
+                        <Button onClick={() => createMut.mutate()} loading={createMut.isPending} disabled={!url || selectedEvents.length === 0}>
                             Create endpoint
                         </Button>
                     </DialogFooter>
